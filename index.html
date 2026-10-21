@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mobile Data Terminal</title>
+<style>
+:root{--bg:#f6f3fc;--card:#fff;--ink:#1b1230;--mute:#6c6285;--line:#e4dcf2;--a:#7c3aed;--a2:#a855f7;--soft:#f1e9ff;--b1:#7c3aed;--b2:#c026d3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0615;--card:#140e25;--ink:#f1ecfb;--mute:#a095bd;--line:#2a2043;--a:#a78bfa;--a2:#c084fc;--soft:#1e1536}}
+:root[data-theme="dark"]{--bg:#0a0615;--card:#140e25;--ink:#f1ecfb;--mute:#a095bd;--line:#2a2043;--a:#a78bfa;--a2:#c084fc;--soft:#1e1536}
+*{box-sizing:border-box}
+html,body{margin:0;background:radial-gradient(900px 520px at 92% -8%,rgba(168,85,247,.20),transparent),radial-gradient(700px 420px at -8% 8%,rgba(124,58,237,.15),transparent),var(--bg);background-attachment:fixed;color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer}
+.grad{background:linear-gradient(135deg,var(--b1),var(--b2));color:#fff;box-shadow:0 8px 22px rgba(124,58,237,.35)}
+#home{min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+#home h1{font-size:clamp(38px,7vw,64px);margin:0 0 8px;letter-spacing:-1.5px;font-weight:800;background:linear-gradient(135deg,var(--a),var(--b2));-webkit-background-clip:text;background-clip:text;color:transparent}
+#home p{color:var(--mute);margin:0 0 44px;font-size:18px}
+.picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;width:100%;max-width:900px}
+.pick{border:1px solid var(--line);background:var(--card);border-radius:28px;padding:44px 28px;color:var(--ink);transition:.2s;text-align:center;box-shadow:0 10px 40px rgba(60,20,120,.10)}
+.pick:hover{transform:translateY(-6px);border-color:var(--a);box-shadow:0 22px 60px rgba(124,58,237,.30)}
+.pick b{display:block;font-size:26px;margin:18px 0 6px;letter-spacing:-.5px}
+.pick span{color:var(--mute);font-size:13px}
+.badge{width:72px;height:72px;border-radius:22px;display:inline-grid;place-items:center;font-weight:800;font-size:20px}
+#app{display:none;min-height:100vh}
+header{display:flex;align-items:center;gap:16px;padding:16px 32px;background:color-mix(in srgb,var(--card) 78%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header .who{flex:1;line-height:1.2}header .who b{display:block;font-size:19px;letter-spacing:-.3px}header .who span{color:var(--mute);font-size:12px}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:10px 16px;font-weight:600;transition:.15s}
+.ghost:hover{border-color:var(--a)}
+.layout{display:flex;align-items:flex-start}
+nav{width:270px;flex:none;padding:24px 16px;position:sticky;top:84px;display:flex;flex-direction:column;gap:6px}
+nav button{text-align:left;background:transparent;border:0;color:var(--mute);padding:14px 18px;border-radius:14px;font-weight:600;font-size:16px;transition:.15s}
+nav button:hover{background:var(--soft);color:var(--ink)}
+nav button.on{background:linear-gradient(135deg,var(--b1),var(--b2));color:#fff;box-shadow:0 8px 22px rgba(124,58,237,.35)}
+main{flex:1;min-width:0;padding:32px 40px 90px;max-width:1600px}
+h2{margin:0 0 6px;font-size:34px;letter-spacing:-.8px}.sub{color:var(--mute);margin:0 0 20px;font-size:16px}
+h3{margin:32px 0 14px;font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute)}
+input,textarea{width:100%;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:15px 18px;font:inherit}
+input:focus,textarea:focus{outline:2px solid var(--a);border-color:transparent}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;text-align:left;color:var(--ink);transition:.18s;box-shadow:0 4px 18px rgba(60,20,120,.06)}
+.tile:hover{border-color:var(--a);background:var(--soft);transform:translateY(-3px);box-shadow:0 14px 34px rgba(124,58,237,.22)}
+.tile b{display:block;font-size:26px;color:var(--a);letter-spacing:-.5px;margin-bottom:4px}.tile span{font-size:14px;color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:14px;transition:.18s;box-shadow:0 4px 18px rgba(60,20,120,.06)}.card:hover{border-color:var(--a);transform:translateY(-2px);box-shadow:0 14px 34px rgba(124,58,237,.18)}
+.ct{font-weight:700;font-size:18px;letter-spacing:-.2px}.cd{color:var(--mute);font-size:13.5px;margin-top:-8px}
+.tx{background:var(--soft);border-radius:14px;padding:16px 18px;font-size:15px;line-height:1.55;white-space:pre-line;flex:1}
+.cp{align-self:flex-start;border:0;border-radius:12px;padding:10px 22px;font-weight:700;background:linear-gradient(135deg,var(--b1),var(--b2));color:#fff;box-shadow:0 6px 16px rgba(124,58,237,.30);transition:.15s}.cp:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.x{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--mute);font-size:20px;line-height:1;display:grid;place-items:center;padding:0;transition:.15s}
+.x:hover{background:#e11d48;border-color:#e11d48;color:#fff}
+.tip{border-left:4px solid var(--a2);background:var(--soft);padding:16px 20px;border-radius:0 16px 16px 0;margin-bottom:20px;font-size:15px}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(40px);opacity:0;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;transition:.2s;pointer-events:none;z-index:9}
+#toast.on{opacity:1;transform:translateX(-50%)}
+.row{display:flex;gap:12px;margin-bottom:18px}.row input{flex:1}
+@media(max-width:900px){.layout{flex-direction:column}nav{width:100%;position:static;flex-direction:row;overflow-x:auto;padding:12px 16px}nav button{white-space:nowrap;padding:12px 16px}main{padding:20px 16px 70px}header{padding:12px 16px}.grid{grid-template-columns:1fr}.row{flex-direction:column}}
+</style>
+</head>
+<body>
+<section id="home">
+  <div class="badge grad" style="margin-bottom:14px;width:60px;height:60px">MDT</div>
+  <h1>Mobile Data Terminal</h1>
+  <p>Choose your character to open your dashboard.</p>
+  <div class="picks">
+    <button class="pick" data-p="lspd"><div class="badge grad">PD</div><b>Hannah Rhodes</b><span>Los Santos Police Department</span></button>
+    <button class="pick" data-p="lssd"><div class="badge grad">SD</div><b>Kindra Torres</b><span>Los Santos Sheriff’s Department</span></button>
+  </div>
+</section>
+
+<section id="app">
+  <header>
+    <button class="ghost" id="back">← Switch</button>
+    <div class="who"><b id="wn"></b><span id="wr"></span></div>
+    <button class="ghost" id="th">Theme</button>
+  </header>
+  <div class="layout"><nav id="nav"></nav><main id="main"></main></div>
+</section>
+<div id="toast">Copied</div>
+
+<script>
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $=s=>document.querySelector(s);
+let ST=[],cur=null,tab=null;
+
+const CODES=[["10-98","Call concluded"],["10-97","Arrived on scene"],["Code 3","Emergent response"],["Code 923","Shots fired in area"],["Code 997","Urgent assistance"],["Code 998","Deputy-involved shootout"],["10-15","Suspect in custody"]];
+const RADIO=[
+["Traffic stop · Code 6","283K, Code 6 on a traffic stop at [location], [vehicle description], plate [plate], occupied [number]."],
+["Backup / assistance","283K, requesting an additional unit at [location] for [brief reason]."],
+["Routine response","283K, responding, ETA [time], from [starting position]. Include the dispatch tag only if multiple incidents were dispatched simultaneously."],
+["Emergency response","283K, Code 3, ETA [time], from [starting position]. Include the dispatch tag only if multiple incidents were dispatched simultaneously."],
+["Requesting EMT","Sheriff’s 283K, requesting EMT to [location] for [patient/injuries], [conscious/unconscious], [breathing/not breathing]."],
+["Tow truck request","Sheriff’s 283K, requesting a Tow unit to [location] for [vehicle/reason]."],
+["PHMC Coroner","Sheriff’s 283K, requesting PHMC Coroner to [location] for [number] deceased."],
+["Crime broadcast","Sheriff’s 283K, clear air for a crime broadcast: [crime], [suspect/vehicle description], last seen [location/direction], [time] ago."],
+["10-15 · Custody","283K, 10-15 with [suspect name], en route to [station/Sally Port]."]];
+
+const mk=(t,c,d)=>({t,c,d});
+const LSSD={
+radio:{intro:"Radio templates plus CAD habits. Replace anything in [brackets] before you transmit.",items:[...RADIO.map(r=>mk(r[0],r[1])),
+mk("Plate check","283K, running plate [plate], [state], on a [vehicle description]."),
+mk("Status change","283K, 10-8, in service, [location]."),
+mk("Out of service","283K, 10-7, out of service for [reason], [location]."),
+mk("CAD · Attach to call","Attach yourself to the call as soon as you respond so dispatch and other units know who is en route.","CAD habit"),
+mk("CAD · Clear the call","Add a short disposition note (report taken, arrest, advised, no merit) before you clear with 10-98.","CAD habit")]},
+codes:{intro:"Starter list. Edit it to match your agency’s official codes.",items:[...CODES.map(c=>mk(c[0],c[0]+" – "+c[1],c[1])),
+mk("10-4","10-4 – Acknowledged","Acknowledged"),mk("10-8","10-8 – In service","In service"),mk("10-7","10-7 – Out of service","Out of service"),
+mk("10-20","10-20 – Location","Location"),mk("10-22","10-22 – Disregard","Disregard"),mk("Code 4","Code 4 – No further assistance needed","No further assistance"),
+mk("Code 6","Code 6 – Out on investigation / stop","On a stop or investigation"),mk("Code 7","Code 7 – Out for meal","Meal break")]},
+cheat:{intro:"One-glance reminders for the shift.",items:[
+mk("Phonetic alphabet","A - Adam · B - Boy · C - Charles · D - David · E - Edward · F - Frank · G - George · H - Henry · I - Ida · J - John · K - King · L - Lincoln · M - Mary · N - Nora · O - Ocean · P - Paul · Q - Queen · R - Robert · S - Sam · T - Tom · U - Union · V - Victor · W - William · X - X-ray · Y - Young · Z - Zebra"),
+mk("Broadcast order","Who you are → what you need → where → details. Keep it short, then wait for acknowledgment."),
+mk("Suspect description order","Gender · race · age · height/build · hair · clothing top to bottom · distinguishing marks · weapon · direction of travel."),
+mk("Vehicle description order","Color · year · make · model · plate · damage or marks · occupants · direction of travel.")]},
+patrol:{intro:"Step-by-step guides for common calls.",items:[
+mk("Traffic stop","1. Pick a safe spot and call it in with location, plate, vehicle, occupants.\n2. Lights on, approach on the passenger side when safe.\n3. Greet, state the reason for the stop, ask for license and registration.\n4. Run the driver and plate, decide on warning, citation or arrest.\n5. Explain the outcome, return documents, clear with 10-98.","Guide"),
+mk("Felony stop","1. Request backup and a supervisor, broadcast location and vehicle.\n2. Wait for enough units, then initiate from cover.\n3. Give clear commands over the PA: engine off, keys out, hands out the window.\n4. Call occupants out one at a time and detain.\n5. Clear the vehicle and search as the law allows.","Guide"),
+mk("Domestic call","1. Wait for backup if possible, approach quietly.\n2. Separate the parties out of earshot.\n3. Take statements, check for injuries, request EMT if needed.\n4. Document everything, advise on resources and clear.","Guide"),
+mk("Welfare check","1. Confirm the address and who requested it.\n2. Knock and announce, check windows and doors.\n3. If you suspect danger inside, call for backup and fire/EMT.\n4. Report the result to dispatch.","Guide")]},
+force:{intro:"Reminders only. Follow your agency’s policy first.",items:[
+mk("Force continuum","Presence → verbal commands → empty-hand control → less-lethal → deadly force. Use only what the situation reasonably requires and de-escalate when you can."),
+mk("Officer safety","Wait for backup on high-risk calls. Keep cover between you and the subject. Watch hands. Keep your radio on and your location known."),
+mk("After a deadly force incident","Make the scene safe, request EMT, notify a supervisor, broadcast the deputy-involved shooting (Code 998), preserve the scene and give your statement through the proper process."),
+mk("Verbal commands","“Sheriff’s Department! Show me your hands!” / “Step out of the vehicle!” / “Get on the ground!”")]},
+legal:{intro:"Quick legal refreshers. Check your server’s penal code for exact wording.",items:[
+mk("Miranda warning","You have the right to remain silent. Anything you say can and will be used against you in a court of law. You have the right to an attorney. If you cannot afford one, one will be appointed for you. Do you understand these rights?"),
+mk("Reasonable suspicion","Specific facts that make you believe a person is involved in a crime. Enough for a brief detention, not an arrest."),
+mk("Probable cause","Facts that would lead a reasonable person to believe a crime was committed and the suspect committed it. Needed for an arrest or a search warrant."),
+mk("Search exceptions","Consent · search incident to arrest · plain view · vehicle (probable cause) · exigent circumstances · inventory.")]},
+cmds:{intro:"Common roleplay chat commands. Add your server’s own list over time.",items:[
+mk("/me","/me [action you are performing]","Describe an action"),mk("/do","/do [what others can see or observe]","Describe the scene or an outcome"),
+mk("/ame","/ame [short action over your head]","Short overhead action"),mk("/b","/b [OOC message]","Out-of-character local chat"),
+mk("/r","/r [radio message]","Faction radio"),mk("/d","/d [department message]","Department radio"),mk("/m","/m [megaphone message]","Megaphone")]},
+lines:{intro:"Roleplay lines ready to paste.",items:[
+mk("Approaching a vehicle","/me approaches the driver’s side window, one hand resting near the holster."),
+mk("Requesting license","/me asks for the driver’s license and registration."),
+mk("Cuffing","/me secures the subject’s hands behind their back and applies handcuffs, checking the fit."),
+mk("Pat-down","/me conducts a pat-down of the subject’s outer clothing for weapons."),
+mk("Reading rights","/me reads the subject their Miranda rights from memory."),
+mk("Writing a citation","/me fills out the citation form and tears off the copy."),
+mk("Checking pulse","/me checks the subject’s pulse at the neck and watches their breathing."),
+mk("Radio call","/me raises the radio to their mouth and transmits.")]}
+};
+
+const PROFILES={
+lssd:{name:"Kindra Torres",role:"Kindra's Field Desk",tabs:[["overview","Overview"],["radio","Radio & CAD"],["codes","Codes"],["cheat","Cheat Sheet"],["patrol","Patrol"],["force","Force & Safety"],["legal","Legal"],["cmds","Commands"],["lines","RP Lines"],["notes","Notebook"]],data:LSSD},
+lspd:{name:"Hannah Rhodes",role:"Hannah's Front Desk",tabs:[["fld","FLD Paperwork"],["recv","Receiving Apps"],["acc","Accepting Apps"],["panel","Panel Access"],["forum","Forum Access"],["serial","Serial Number Requests"],["slf","Stolen/Lost/Found"],["ccw","LEO CCW Apps"],["notes","Notebook"]],data:{}}
+};
+
+function card(i){ST.push(i.c);return `<div class="card"><div class="ct">${esc(i.t)}</div>${i.d?`<div class="cd">${esc(i.d)}</div>`:""}<div class="tx">${esc(i.c)}</div><button class="cp" data-k="${ST.length-1}">Copy</button></div>`}
+function tile(t,m,c){ST.push(c);return `<button class="tile" data-k="${ST.length-1}"><b>${esc(t)}</b><span>${esc(m)}</span></button>`}
+
+function view(id){
+  ST=[];const P=PROFILES[cur],label=P.tabs.find(t=>t[0]===id)[1];
+  let h=`<h2>${esc(label)}</h2>`;
+  if(id==="overview"){
+    h+=`<p class="sub">Tap a code or a template to copy it.</p><h3>Most used codes</h3><div class="tiles">${CODES.map(c=>tile(c[0],c[1],c[0])).join("")}</div><h3>Most used radio</h3><div class="grid">${RADIO.map(r=>card(mk(r[0],r[1]))).join("")}</div>`;
+  }else if(id==="notes"){
+    h+=`<p class="sub">Saved on this device for ${esc(P.name)}.</p><div class="row"><input id="nt" placeholder="Title"></div><textarea id="nb" rows="4" placeholder="Write anything you want to keep…"></textarea><div class="row" style="margin-top:10px"><button class="cp" id="ns">Save note</button></div><div class="grid" id="nl"></div>`;
+  }else if(id==="ccw"){
+    h+=`<p class="sub">Three replies for LEO CCW applications. Fill the name and reason, then copy.</p><div class="row"><input id="cn" placeholder="Applicant name"><input id="cr" placeholder="Pending reason"></div><div class="grid" id="cc"></div>`;
+  }else if(P.data[id]){
+    const d=P.data[id];h+=`<div class="tip">${esc(d.intro)}</div><div class="row"><input id="q" placeholder="Search this tab…"></div><div class="grid" id="g">${d.items.map(card).join("")}</div>`;
+  }else{
+    h+=`<div class="tip">This tab is ready for your templates. Send me the wording you use for ${esc(label)} and I will add it here.</div>`;
+  }
+  $("#main").innerHTML=h;
+  if(id==="notes")notes();
+  if(id==="ccw")ccw();
+  const q=$("#q");if(q)q.oninput=()=>document.querySelectorAll("#g .card").forEach(c=>c.style.display=c.textContent.toLowerCase().includes(q.value.toLowerCase())?"":"none");
+}
+
+function ccw(){
+  const draw=()=>{ST=[];const n=$("#cn").value||"[applicant name]",r=$("#cr").value||"[reason]";
+    $("#cc").innerHTML=[mk("Approved and issued",`Hello ${n},\n\nYour LEO CCW application has been approved and your permit has been issued. Please carry it with you and follow all conditions of carry.\n\nRegards,\nHannah Rhodes\nLSPD · Firearms & Licensing Division`),
+    mk("Pending for:",`Hello ${n},\n\nYour LEO CCW application is currently pending for: ${r}\n\nPlease address this so we can continue processing your application.\n\nRegards,\nHannah Rhodes\nLSPD · Firearms & Licensing Division`),
+    mk("Rejected",`Hello ${n},\n\nAfter review, your LEO CCW application has been rejected. Reason: ${r}\n\nRegards,\nHannah Rhodes\nLSPD · Firearms & Licensing Division`)].map(card).join("")};
+  $("#cn").oninput=draw;$("#cr").oninput=draw;draw();
+}
+
+function notes(){
+  const key="dh-notes-"+cur;let L=[];try{L=JSON.parse(localStorage.getItem(key)||"[]")}catch(e){}
+  const save=()=>{try{localStorage.setItem(key,JSON.stringify(L))}catch(e){}};
+  const draw=()=>{ST=[];$("#nl").innerHTML=L.length?L.map((n,i)=>card(mk(n.t||"Untitled",n.b)).replace('<div class="card">',`<div class="card" style="position:relative"><button class="x" data-del="${i}" title="Delete note" aria-label="Delete note">×</button>`)).join(""):`<div class="cd">No notes yet.</div>`};
+  $("#ns").onclick=()=>{const t=$("#nt").value.trim(),b=$("#nb").value.trim();if(!b&&!t)return;L.unshift({t,b});save();$("#nt").value=$("#nb").value="";draw();toast("Saved")};
+  $("#nl").onclick=e=>{const d=e.target.dataset.del;if(d!==undefined){L.splice(+d,1);save();draw()}};
+  draw();
+}
+
+function open_(p){
+  cur=p;const P=PROFILES[p];$("#home").style.display="none";$("#app").style.display="block";
+  $("#wn").textContent=P.name;$("#wr").textContent=P.role;
+  $("#nav").innerHTML=P.tabs.map(t=>`<button data-t="${t[0]}">${esc(t[1])}</button>`).join("");
+  go(P.tabs[0][0]);
+}
+function go(id){tab=id;document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===id));view(id)}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("on"),1100)}
+function copy(txt){
+  const ok=()=>toast("Copied");
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,()=>fb())}else fb();
+  function fb(){const a=document.createElement("textarea");a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){toast("Copy failed")}a.remove()}
+}
+
+document.addEventListener("click",e=>{
+  const p=e.target.closest("[data-p]");if(p)return open_(p.dataset.p);
+  const t=e.target.closest("[data-t]");if(t)return go(t.dataset.t);
+  const k=e.target.closest("[data-k]");if(k)copy(ST[+k.dataset.k]);
+});
+$("#back").onclick=()=>{$("#app").style.display="none";$("#home").style.display="flex"};
+$("#th").onclick=()=>{const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.dataset.theme=dark?"light":"dark"};
+</script>
+</body>
+</html>
